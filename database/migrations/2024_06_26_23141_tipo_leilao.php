@@ -17,7 +17,7 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        DB::table('tipo_reclamacao')->insert([
+        DB::table('tipo_leilao')->insert([
             ['nome' => 'Provavel'],
             ['nome' => 'Confirmado'],
             ['nome' => 'Não existe'],

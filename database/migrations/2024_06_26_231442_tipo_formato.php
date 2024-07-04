@@ -16,7 +16,7 @@ return new class extends Migration {
             $table->timestamps();
         });
 
-        DB::table('tipo_reclamacao')->insert([
+        DB::table('tipo_formato')->insert([
             ['nome' => 'Revelead Key'],
             ['nome' => 'Download Page'],
             ['nome' => 'Giftlink'],

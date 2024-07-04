@@ -19,7 +19,7 @@ return new class extends Migration
             $table->foreign('tipo_reclamacao_id')->references('id')->on('tipo_reclamacao');
             
             $table->string('steamId');
-            $table->string('tipo_formato_id');
+            $table->integer('tipo_formato_id');
             $table->foreign('tipo_formato_id')->references('id')->on('tipo_formato');
             
             $table->string('chaveRecebida');
@@ -30,13 +30,13 @@ return new class extends Migration
             $table->string('randomClassificationG2A');
             $table->string('observacao');
 
-            $table->string('id_leilao_G2A');
+            $table->integer('id_leilao_G2A');
             $table->foreign('id_leilao_G2A')->references('id')->on('tipo_leilao');
 
-            $table->string('id_leilao_gamivo');
+            $table->integer('id_leilao_gamivo');
             $table->foreign('id_leilao_gamivo')->references('id')->on('tipo_leilao');
             
-            $table->string('id_leilao_kinguin');
+            $table->integer('id_leilao_kinguin');
             $table->foreign('id_leilao_kinguin')->references('id')->on('tipo_leilao');
             
             $table->string('plataforma');
@@ -52,7 +52,7 @@ return new class extends Migration
             $table->integer('leiloes');
             $table->integer('quantidade');
             $table->boolean('devolucoes');
-            $table->decimal('lucro', total: 8, places: 2);
+            $table->decimal('lucroR$', total: 8, places: 2);
             $table->decimal('lucro%', total: 8, places: 2);
             $table->date('dataAdquirida');
             $table->date('dataVenda');
