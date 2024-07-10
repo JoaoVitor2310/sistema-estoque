@@ -9,5 +9,5 @@ use Illuminate\Support\Facades\Route;
 // })->middleware('auth:sanctum');
 
 
-Route::get('/', [VendaChaveTrocaController::class,'index'])->name('');
-Route::post('/game', [VendaChaveTrocaController::class,'store'])->name('');
+Route::get('/', [VendaChaveTrocaController::class,'index'])->name('/');
+Route::post('/game', [VendaChaveTrocaController::class,'store'])->name('store');

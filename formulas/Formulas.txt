@@ -1,0 +1,56 @@
+-Preço Venda
+=SE('Venda-Chave-Troca'!$A2="T";'Venda-Chave-Troca'!$F2;SE(OU('Venda-Chave-Troca'!$E2="Gamivo";'Venda-Chave-Troca'!$E2="Kinguin");'Venda-Chave-Troca'!$F2;SE(E((F2)<='TABELA G2A'!$A$2);F2;SE(E((F2)>='TABELA G2A'!$A$2;(F2)<='TABELA G2A'!$B$2);(F2)/(1+'TABELA G2A'!$A$3);SE(E((F2)>='TABELA G2A'!$C$2;(F2)<='TABELA G2A'!$D$2);(F2)/(1+'TABELA G2A'!$C$3);SE(E((F2)>='TABELA G2A'!$E$2;(F2)<='TABELA G2A'!$F$2);(F2)/(1+'TABELA G2A'!$E$3);SE(E((F2)>='TABELA G2A'!$G$2;(F2)<='TABELA G2A'!$H$2);(F2)/(1+'TABELA G2A'!$G$3);SE(E((F2)>='TABELA G2A'!$I$2;(F2)<='TABELA G2A'!$J$2);(F2)/(1+'TABELA G2A'!$I$3);SE(E((F2)>='TABELA G2A'!$A$4;(F2)<='TABELA G2A'!$B$4);(F2)/(1+'TABELA G2A'!$A$5);SE(E((F2)>='TABELA G2A'!$C$4;(F2)<='TABELA G2A'!$D$4);(F2)/(1+'TABELA G2A'!$C$5);SE(E((F2)>='TABELA G2A'!$E$4;(F2)<='TABELA G2A'!$F$4);(F2)/(1+'TABELA G2A'!$E$5);SE(E((F2)>='TABELA G2A'!$G$4;(F2)<='TABELA G2A'!$H$4);(F2)/(1+'TABELA G2A'!$G$5);SE(E((F2)>='TABELA G2A'!$I$4;(F2)<='TABELA G2A'!$J$4);(F2)/(1+'TABELA G2A'!$I$5);SE(E((F2)>='TABELA G2A'!$A$6;(F2)<='TABELA G2A'!$B$6);(F2)/(1+'TABELA G2A'!$A$7);SE(E((F2)>='TABELA G2A'!$C$6;(F2)<='TABELA G2A'!$D$6);(F2)/(1+'TABELA G2A'!$C$7);SE(E((F2)>='TABELA G2A'!$E$6;(F2)<='TABELA G2A'!$F$6);(F2)/(1+'TABELA G2A'!$E$7);SE(E((F2)>='TABELA G2A'!$G$6;(F2)<='TABELA G2A'!$H$6);(F2)/(1+'TABELA G2A'!$G$7);SE(E((F2)>='TABELA G2A'!$I$6;(F2)<='TABELA G2A'!$J$6);(F2)/(1+'TABELA G2A'!$A$9);SE(E((F2)>='TABELA G2A'!$A$8;(F2)<='TABELA G2A'!$B$8);(F2)/(1+'TABELA G2A'!$B$9);SE(E((F2)>='TABELA G2A'!$C$8;(F2)<='TABELA G2A'!$D$8);(F2)/(1+'TABELA G2A'!$C$9);SE(E((F2)>='TABELA G2A'!$E$8;(F2)<='TABELA G2A'!$F$8);(F2)/(1+'TABELA G2A'!$E$9);SE(E((F2)>='TABELA G2A'!$G$8;(F2)<='TABELA G2A'!$H$8);(F2)/(1+'TABELA G2A'!$G$9);SE(E((F2)>='TABELA G2A'!$I$8;(F2)<='TABELA G2A'!$J$8);(F2)/(1+'TABELA G2A'!$I$9);SE((F2)>='TABELA G2A'!$A$10;(F2)/(1+'TABELA G2A'!$A$11);""))))))))))))))))))))))))
+
+
+
+-income real
+=SE('Venda-Chave-Troca'!$A2="T";'Venda-Chave-Troca'!$F2;SE('Venda-Chave-Troca'!$E2="G2A";G2*0,898-(0,4)-((0,15)*N2/O2);SE('Venda-Chave-Troca'!$E2="Gamivo";SE('Venda-Chave-Troca'!$F2<4;(F2*0,95)-(0,1);(F2*0,921)-(0,35));SE('Venda-Chave-Troca'!$E2="Kinguin";(F2*0,8771929)-(0,306);""))))
+
+
+-income simulado
+=SE('Venda-Chave-Troca'!$A2="T";'Venda-Chave-Troca'!$F2;SE($E2="gamivo";SE($F2>4;'Venda-Chave-Troca'!$G2+(-0,079*'Venda-Chave-Troca'!$G2)-(0,35);'Venda-Chave-Troca'!$G2-(0,05*'Venda-Chave-Troca'!$G2)-(0,1));SE($E2="G2A";G2*0,898-(0,55);'Venda-Chave-Troca'!$G2+(-0,1228071*'Venda-Chave-Troca'!$G2)-(0,306))))
+
+valor pago individual
+A fórmula é preenchida manualmente a cada negociação, o Lucas sabe qual é
+
+
+Lucro Real
+=((((F4)*M4*0,892)-(1,33*M4+(0,57/O4)*N4)-(L4)-(F4)*P4))
+
+-> $lucroR$ = ((($precoCliente * $vendido * 0.892) - (1.33 * $vendido + (0.57 / $quantidade) * $leiloes) - $valorPagoIndividual - ($precoCliente * $devolucoes)));
+
+
+Lucro %
+=Q4/L4
+
+-> $lucro% = $lucroR$ / $valorPagoIndividual;
+
+Random:
+=SE(E(A4776>=39,99;B4776>=80);"VIP";SE(E(A4776>=29,99;B4776>=80);"Diamond";SE(E(A4776>=24,99;B4776>=70);"Elite";SE(E(A4776>=19,99;B4776>=80);"Legendary";SE(E(A4776>=10;B4776>=70);"Gold";SE(E(A4776>=8;B4776>=75);"Premium";SE(E(A4776<8;A4776<>0);"Random";SE(E(B4776<70;B4776<>0);"Random";""))))))))
+
+legenda colunas
+A = Formato
+B = chaveRecebida
+C = nomeJogo
+D = observação
+E = plataforma
+F = precoCliente
+G = precoVenda
+H = incomeReal
+I = incomeSimulado
+J = chaveEntregue
+K = valorPagoTotal
+l = valorPagoIndividual
+m = vendido
+N = leiloes
+0 = quantidade
+P = devoluções
+Q = lucroR$
+R = lucro%
+S = dataAdquirida
+T = dataVenda
+U = dataVendida
+V = perfilOrigem
+W = email
+
+

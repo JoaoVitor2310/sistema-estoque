@@ -15,7 +15,7 @@ class VendaChaveTrocaController extends Controller
      */
     public function index()
     {
-        return Tipo_reclamacao::all();
+        return Tipo_leilao::all();
     }
 
     /**
@@ -24,7 +24,19 @@ class VendaChaveTrocaController extends Controller
     public function store(Request $request)
     {
         $validator = \Validator::make($request->all(), [
-            "teste" => "teste"                
+            "chaveRecebida" => "required",
+            "nomeJogo" => "required",
+            "precoJogo" => "required",
+            // "notaMetacritic" => "required",
+            // "isSteam" => "required",
+            // "plataforma" => "required",
+            "precoCliente" => "required",
+            // "chaveEntregue" => "required",
+            "valorPagoTotal" => "required",
+            "quantidade" => "required",
+            "dataAdquirida" => "required",
+            "perfilOrigem" => "required",
+            "email" => "required",
         ]);
     }
 
