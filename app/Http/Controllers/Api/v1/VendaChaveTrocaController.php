@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
+use App\Models\Venda_chave_troca;
+use App\Traits\HttpResponses;
 use Illuminate\Http\Request;
 use App\Models\Tipo_formato;
 use App\Models\Tipo_leilao;
@@ -10,6 +12,7 @@ use App\Models\Tipo_reclamacao;
 
 class VendaChaveTrocaController extends Controller
 {
+    use HttpResponses;
     /**
      * Display a listing of the resource.
      */
@@ -38,6 +41,17 @@ class VendaChaveTrocaController extends Controller
             "perfilOrigem" => "required",
             "email" => "required",
         ]);
+
+        if($validator->fails()){
+            return $this->error(422, 'Data invalid', $validator->errors());
+            // return response()->json($validator->errors(), 422);
+        }
+        
+        $created = Venda_chave_troca::create($validator->validated());
+        
+        if(!$created){
+            return $this->error(400, 'Something went wrong!');
+        }
     }
 
     /**
