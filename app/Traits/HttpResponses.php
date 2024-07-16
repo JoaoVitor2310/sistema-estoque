@@ -2,9 +2,10 @@
 
 namespace App\Traits;
 use Illuminate\Support\MessageBag;
+use Illuminate\Database\Eloquent\Model;
 
 trait HttpResponses{
-    public function response(string|int $code, string $message = "", $data = []){
+    public function response(string|int $code, string $message = "", array|Model $data = []){
         return response()->json(["code"=> $code,"message"=> $message,"data"=> $data], $code); 
     }
     

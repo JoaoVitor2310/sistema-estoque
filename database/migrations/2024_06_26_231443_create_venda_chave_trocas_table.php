@@ -12,53 +12,57 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('venda_chave_trocas', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->integer('reclamacoesAnteriores')->default(0);
             
-            $table->unsignedBigInteger('tipo_reclamacao_id');
+            $table->unsignedBigInteger('tipo_reclamacao_id')->default(1);
             $table->foreign('tipo_reclamacao_id')->references('id')->on('tipo_reclamacao');
             
             $table->string('steamId');
-            $table->integer('tipo_formato_id');
+            $table->integer('tipo_formato_id')->default(1);
             $table->foreign('tipo_formato_id')->references('id')->on('tipo_formato');
             
             $table->string('chaveRecebida');
             $table->string('nomeJogo');
             $table->decimal('precoJogo', total: 8, places: 2);
-            $table->decimal('notaMetacritic', total: 5, places: 2);
-            $table->boolean('isSteam');
-            $table->string('randomClassificationG2A');
-            $table->string('observacao');
+            $table->integer('notaMetacritic')->default(0);
+            $table->boolean('isSteam')->nullable();
+            $table->string('randomClassificationG2A')->nullable();
+            $table->string('observacao')->nullable();
 
-            $table->integer('id_leilao_G2A');
+            $table->integer('id_leilao_G2A')->default(1);
             $table->foreign('id_leilao_G2A')->references('id')->on('tipo_leilao');
 
-            $table->integer('id_leilao_gamivo');
+            $table->integer('id_leilao_gamivo')->default(1);
             $table->foreign('id_leilao_gamivo')->references('id')->on('tipo_leilao');
             
-            $table->integer('id_leilao_kinguin');
+            $table->integer('id_leilao_kinguin')->default(1);
             $table->foreign('id_leilao_kinguin')->references('id')->on('tipo_leilao');
             
-            $table->string('plataforma');
+            // $table->string('plataforma')->nullable();
+
+            $table->integer('id_plataforma')->default(1);
+            $table->foreign('id_plataforma')->references('id')->on('plataforma');
             
-            $table->decimal('precoCliente', total: 8, places: 2);
-            $table->decimal('precoVenda', total: 8, places: 2);
-            $table->decimal('incomeReal', total: 8, places: 2);
-            $table->decimal('incomeSimulado', total: 8, places: 2);
-            $table->string('chaveEntregue'); // Key enviada para troca
-            $table->string('valorPagoTotal'); // Pode ser o jogo enviado ou o valor pago total
-            $table->decimal('valorPagoIndividual', total: 8, places: 2);
-            $table->boolean('vendido');
-            $table->integer('leiloes');
-            $table->integer('quantidade');
-            $table->boolean('devolucoes');
-            $table->decimal('lucroR$', total: 8, places: 2);
-            $table->decimal('lucro%', total: 8, places: 2);
-            $table->date('dataAdquirida');
-            $table->date('dataVenda');
-            $table->date('dataVendida');
+            $table->decimal('precoCliente', total: 8, places: 2)->nullable();
+            $table->decimal('precoVenda', total: 8, places: 2)->nullable();
+            $table->decimal('incomeReal', total: 8, places: 2)->nullable();
+            $table->decimal('incomeSimulado', total: 8, places: 2)->nullable();
+            $table->string('chaveEntregue')->nullable(); // Key enviada para troca
+            $table->string('valorPagoTotal')->nullable(); // Pode ser o jogo enviado ou o valor pago total
+            $table->decimal('valorPagoIndividual', total: 8, places: 2)->nullable();
+            $table->boolean('vendido')->nullable(); // 1 - vendido, 0 - não vendido
+            $table->integer('leiloes')->default(0);
+            $table->integer('quantidade')->default(0);
+            $table->boolean('devolucoes')->nullable();
+            $table->decimal('lucroR$', total: 8, places: 2)->default(0);
+            $table->decimal('lucro%', total: 8, places: 2)->default(0);
+            $table->date('dataAdquirida')->nullable();
+            $table->date('dataVenda')->nullable();
+            $table->date('dataVendida')->nullable();
             $table->string('perfilOrigem');
             $table->string('email');
+            $table->timestamps();
         });
     }
 

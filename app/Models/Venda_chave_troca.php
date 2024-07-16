@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace app\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class Venda_chave_troca extends Model
 {
     use HasFactory;
+
+    protected $table = 'venda_chave_trocas';
     protected $fillable = [
         "id",
         "reclamacoesAnteriores",
@@ -43,16 +45,4 @@ class Venda_chave_troca extends Model
         "perfilOrigem",
         "email"
     ];
-
-    const RECLAMACAO_VALUES = ['Dup', 'Revo', 'Reg'];
-
-    public function setReclamacaoAttribute($value)
-    {
-        if (!in_array($value, self::RECLAMACAO_VALUES) && $value !== '') {
-            throw new \InvalidArgumentException("Invalid value for reclamacao: $value");
-        }
-
-        $this->attributes['reclamacao'] = $value;
-    }
-
 }
