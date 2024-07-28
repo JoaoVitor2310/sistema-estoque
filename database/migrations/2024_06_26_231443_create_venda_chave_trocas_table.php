@@ -12,8 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('venda_chave_trocas', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->integer('reclamacoesAnteriores')->default(0);
+            $table->id();
+            $table->unsignedBigInteger('id_fornecedor')->default(1);
+            $table->foreign('id_fornecedor')->references('id')->on('fornecedor');
             
             $table->unsignedBigInteger('tipo_reclamacao_id')->default(1);
             $table->foreign('tipo_reclamacao_id')->references('id')->on('tipo_reclamacao');

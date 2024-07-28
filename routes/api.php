@@ -11,3 +11,4 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [VendaChaveTrocaController::class,'index'])->name('/');
 Route::post('/game', [VendaChaveTrocaController::class,'store'])->name('store');
+Route::put('/game/{id}', [VendaChaveTrocaController::class,'update'])->name('update');
