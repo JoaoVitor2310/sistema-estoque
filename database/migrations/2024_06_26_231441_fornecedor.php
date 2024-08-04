@@ -13,7 +13,7 @@ return new class extends Migration {
         Schema::create('fornecedor', function (Blueprint $table) {
             $table->id();
             $table->string('perfilOrigem')->index();
-            $table->string('quantidade_reclamacoes')->default(0);
+            $table->integer('quantidade_reclamacoes')->default(0);
             $table->timestamps();
         });
     }

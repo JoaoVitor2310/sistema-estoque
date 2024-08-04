@@ -69,20 +69,28 @@ class VendaChaveTrocaController extends Controller
         $data = $validator->getData();
 
         // Identificar o vendedor e adicionar +1 para ele
-        $fornecedor = Fornecedor::select('*')->where('perfilOrigem', $data['perfilOrigem'])->first();
+        // $fornecedor = Fornecedor::select('*')->where('perfilOrigem', $data['perfilOrigem'])->first();
 
-        if (!$fornecedor) { // Se não tiver o fornecedor, cria ele
-            $newFornecedor['perfilOrigem'] = $data['perfilOrigem'];
-            if ($data['reclamacao'] == true)
-                $newFornecedor['quantidade_reclamacoes'] = 1; // Se tiver reclamação, adiciona +1
-            Fornecedor::create($newFornecedor);
-        } else {
-            // Existe o fornecedor, irá somar mais uma reclamação só se tiver mandado reclamação
-            if ($data['reclamacao'] == true)
-                $fornecedor->where('perfilOrigem', $data['perfilOrigem'])->update(['quantidade_reclamacoes' => $fornecedor->quantidade_reclamacoes + 1]);
-        }
+        // if (!$fornecedor) { // Se não tiver o fornecedor, cria ele
+        //     $newFornecedor['perfilOrigem'] = $data['perfilOrigem'];
+        //     if ($data['reclamacao'] == true)
+        //         $newFornecedor['quantidade_reclamacoes'] = 1; // Se tiver reclamação, adiciona +1
+        //     $fornecedor = Fornecedor::create($newFornecedor);
+        //     // return $this->error(400, $fornecedor);
+        // } else {
+        //     // Existe o fornecedor, irá somar mais uma reclamação só se tiver mandado reclamação
+        //     if ($data['reclamacao'] == true) {
+        //         $fornecedor->where('perfilOrigem', $data['perfilOrigem'])->update(['quantidade_reclamacoes' => $fornecedor->quantidade_reclamacoes + 1]);
+        //         // $fornecedor['quantidade_reclamacoes'] = $fornecedor->quantidade_reclamacoes;
+        //     }
+        // }
 
-        $data['reclamacoesAnteriores'] = $fornecedor->quantidade_reclamacoes;
+        // $data['id_fornecedor'] = $fornecedor->id;
+        $data['id_fornecedor'] = $this->criarAdicionarFornecedor($data['perfilOrigem'], $data['reclamacao']);
+
+
+
+
 
         // Calcula as fórmulas
 
@@ -134,11 +142,9 @@ class VendaChaveTrocaController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $game = Venda_chave_troca::select('*')->where('id', $id)->first();
-        if (!$game)
+        $jogo = Venda_chave_troca::select('*')->where('id', $id)->first();
+        if (!$jogo)
             return $this->error(404, 'Jogo não encontrado');
-
-        // return response()->json($game, 200);
 
         $validator = \Validator::make($request->all(), [
             "reclamacao" => "boolean",
@@ -180,17 +186,57 @@ class VendaChaveTrocaController extends Controller
 
         $data = $validator->validated();
 
-        if ($data['reclamacao'] == true) { // Teve problema com esse fornecedor
-            // Identificar o vendedor e adicionar +1 para ele
-            $fornecedor = Fornecedor::select('*')->where('perfilOrigem', $data['perfilOrigem'])->first();
-            if (!$fornecedor)
-                return $this->error(404, 'Fornecedor não encontrado');
+        // $data['perfilOrigem'] == $jogo
+        $fornecedorCadastrado = Fornecedor::select('*')->where('perfilOrigem', $jogo['perfilOrigem'])->first();
 
-            // Existe o fornecedor, irá somar mais uma reclamação
-            $fornecedor->where('perfilOrigem', $data['perfilOrigem'])->update(['quantidade_reclamacoes' => $fornecedor->quantidade_reclamacoes + 1]);
+        $fornecedorEnviado = Fornecedor::select('*')->where('perfilOrigem', $data['perfilOrigem'])->first();
+        if (!$fornecedorEnviado) { // Se não existe o forncedor enviado, cria
+            $data['id_fornecedor'] = $this->criarAdicionarFornecedor($data['perfilOrigem'], $data['reclamacao']);
+            // Diminui uma reclamação do fornecedor cadastrado
+
+            $fornecedorCadastrado->where('perfilOrigem', $jogo['perfilOrigem'])->update(['quantidade_reclamacoes' => $fornecedorCadastrado->quantidade_reclamacoes - 1]);
+        } else {
+            // Comparar pra ver se é o mesmo fornecedor
+
+            if ($fornecedorEnviado['id'] != $fornecedorCadastrado['id']) {
+                // Diminuir uma reclamação do fornedor cadastrado e adicionar para o enviado
+                $fornecedorCadastrado->where('id', $fornecedorCadastrado['id'])->update(['quantidade_reclamacoes' => $fornecedorCadastrado->quantidade_reclamacoes - 1]);
+                $fornecedorEnviado->where('id', $fornecedorEnviado['id'])->update(['quantidade_reclamacoes' => $fornecedorEnviado->quantidade_reclamacoes + 1]);
+            }
+            // Se for o mesmo, não faz nada
+            $data['id_fornecedor'] = $fornecedorEnviado['id'];
         }
 
-        $game->update($validator->validated());
+        unset($data['reclamacao']);
+        $result = Venda_chave_troca::where('id', $id)->update($data);
+
+        if (!$result) return $this->error(500, 'Erro interno ao atualizar jogo');
+
+
+        return $this->response(200, 'Jogo atualizado com sucesso', [$data]);
+
+        // Identificar o vendedor
+        // $fornecedor = Fornecedor::select('*')->where('perfilOrigem', $data['perfilOrigem'])->first();
+
+        // if (!$fornecedor) {
+        //     return $this->error(404, 'Fornecedor não encontrado');
+        // }
+
+        // // Existe o fornecedor, irá somar mais uma reclamação só se tiver mandado reclamação
+        // if ($data['reclamacao'] == true) {
+        //     $fornecedor->where('perfilOrigem', $data['perfilOrigem'])->update(['quantidade_reclamacoes' => $fornecedor->quantidade_reclamacoes + 1]);
+        // }
+
+        // $data['id_fornecedor'] = $fornecedor->id;
+        $data['id_fornecedor'] = $this->criarAdicionarFornecedor($data['perfilOrigem'], $data['reclamacao']);
+
+
+
+
+
+
+
+
         return $this->response(200, 'Jogo atualizado com sucesso', $game);
 
         // return $this->response(200, 'Jogo atualizado com sucesso');
@@ -203,5 +249,26 @@ class VendaChaveTrocaController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    private function criarAdicionarFornecedor($perfilOrigem, $reclamacao)
+    {
+        $fornecedor = Fornecedor::select('*')->where('perfilOrigem', $perfilOrigem)->first();
+
+        if (!$fornecedor) { // Se não tiver o fornecedor, cria ele
+            $newFornecedor['perfilOrigem'] = $perfilOrigem;
+            if ($reclamacao == true)
+                $newFornecedor['quantidade_reclamacoes'] = 1; // Se tiver reclamação, adiciona +1
+            $fornecedor = Fornecedor::create($newFornecedor);
+            // return $this->error(400, $fornecedor);
+        } else {
+            // Existe o fornecedor, irá somar mais uma reclamação só se tiver mandado reclamação
+            if ($reclamacao == true) {
+                $fornecedor->where('perfilOrigem', $perfilOrigem)->update(['quantidade_reclamacoes' => $fornecedor->quantidade_reclamacoes + 1]);
+                // $fornecedor['quantidade_reclamacoes'] = $fornecedor->quantidade_reclamacoes;
+            }
+        }
+
+        return $fornecedor->id;
     }
 }

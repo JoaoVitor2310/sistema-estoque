@@ -107,8 +107,48 @@ class Formulas
 
 
 
-    public function calcIncomeReal(){}    
-    public function calcIncomeSimulado(){}    
+    public function calcIncomeReal($formato, $plataforma, $precoCliente, $precoVenda, $leiloes, $quantidade) {
+        $resultado = 0;
+    
+        if ($formato == "T") {
+            $resultado = $precoCliente;
+        } else if ($plataforma == "G2A") {
+            $resultado = $precoVenda * 0.898 - 0.4 - (0.15 * $leiloes / $quantidade);
+        } else if ($plataforma == "Gamivo") {
+            if ($precoCliente < 4) {
+                $resultado = ($precoCliente * 0.95) - 0.1;
+            } else {
+                $resultado = ($precoCliente * 0.921) - 0.35;
+            }
+        } else if ($plataforma == "Kinguin") {
+            $resultado = ($precoCliente * 0.8771929) - 0.306;
+        } else {
+            $resultado = ""; // Valor padrão caso nenhuma condição seja atendida
+        }
+    
+        return $resultado;
+    } 
+
+    public function calcIncomeSimulado($formato, $plataforma, $precoCliente, $precoVenda) {
+        $resultado = 0;
+    
+        if ($formato == "T") {
+            $resultado = $precoCliente;
+        } else if ($plataforma == "gamivo") {
+            if ($precoCliente > 4) {
+                $resultado = $precoVenda + (-0.079 * $precoVenda) - 0.35;
+            } else {
+                $resultado = $precoVenda - (0.05 * $precoVenda) - 0.1;
+            }
+        } else if ($plataforma == "G2A") {
+            $resultado = $precoVenda * 0.898 - 0.55;
+        } else { // Kinguin?
+            $resultado = $precoVenda + (-0.1228071 * $precoVenda) - 0.306;
+        }
+    
+        return $resultado;
+    }
+
     public function calcValorPagoIndividual(){}
     public function calcLucroReal($vendido, $quantidade, $leiloes, $precoCliente, $valorPagoIndividual, $devolucoes){
         return $precoCliente * $vendido * 0.892 - (1.33 * $vendido + (0.57 / $quantidade) * $leiloes) - $valorPagoIndividual - $precoCliente * $devolucoes;
@@ -116,5 +156,41 @@ class Formulas
     public function calcLucroPercentual($lucroRS, $valorPagoIndividual){
         return  $lucroRS /$valorPagoIndividual;
     }
-    public function calcRandom(){}
+    public function classificacaoRandomG2A($precoJogo, $nota){
+        if ($precoJogo >= 39.99 && $nota >= 80) {
+            return "VIP";
+        } elseif ($precoJogo >= 29.99 && $nota >= 80) {
+            return "Diamond";
+        } elseif ($precoJogo >= 24.99 && $nota >= 70) {
+            return "Elite";
+        } elseif ($precoJogo >= 19.99 && $nota >= 80) {
+            return "Legendary";
+        } elseif ($precoJogo >= 10 && $nota >= 70) {
+            return "Gold";
+        } elseif ($precoJogo >= 8 && $nota >= 75) {
+            return "Premium";
+        } elseif ($precoJogo < 8 && $precoJogo != 0) {
+            return "Random";
+        } elseif ($nota < 70 && $nota != 0) {
+            return "Random";
+        } else {
+            return "";
+        }
+    }
+
+    public function classificacaoRandomKinguin($precoJogo, $nota){
+        if (empty($precoJogo) || empty($nota)) {
+            return "";
+        } elseif ($precoJogo >= 16.99 && $nota >= 80) {
+            return "Deluxe";
+        } elseif ($precoJogo >= 11.99 && $nota >= 75) {
+            return "Gold";
+        } elseif ($precoJogo >= 8.99 && $nota >= 70) {
+            return "Premium";
+        } elseif ($precoJogo >= 2.99 && $nota >= 50) {
+            return "Random";
+        } else {
+            return "Não Se Enquadra";
+        }
+    }
 }
