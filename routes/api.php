@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Route;
 // })->middleware('auth:sanctum');
 
 
-Route::get('/', [VendaChaveTrocaController::class,'index'])->name('/');
-Route::post('/game', [VendaChaveTrocaController::class,'store'])->name('store');
-Route::put('/game/{id}', [VendaChaveTrocaController::class,'update'])->name('update');
+// Route::get('/', [VendaChaveTrocaController::class,'index'])->name('/');
+Route::post('/game', [VendaChaveTrocaController::class,'store'])->name('store'); // CREATE
+Route::get('/games', [VendaChaveTrocaController::class,'index'])->name('index'); // READ all games
+Route::put('/game/{id}', [VendaChaveTrocaController::class,'update'])->name('update'); // UPDATE
+Route::delete('/game/{id}', [VendaChaveTrocaController::class,'destroy'])->name('destroy'); // DELETE

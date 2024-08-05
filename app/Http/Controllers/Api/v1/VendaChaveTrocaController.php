@@ -27,9 +27,18 @@ class VendaChaveTrocaController extends Controller
         $this->formulas = new Formulas();
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        return Tipo_leilao::all();
+        // Recebe os parâmetros 'limit' e 'offset' da requisição
+        $limit = $request->query('limit', 10);  // Valor padrão de 10
+        $offset = $request->query('offset', 0);  // Valor padrão de 0
+
+        // Busca os registros utilizando limit e offset
+        $jogos = Venda_chave_troca::limit($limit)->offset($offset)->get();
+
+        is_object($jogos) ? $jogos = $jogos->toArray() : $jogos; // Garante que sempre será um array, mesmo que tenha só um jogo
+
+        return $this->response(200, 'Jogos encontrados com sucesso.', $jogos);
     }
 
     /**
@@ -210,10 +219,11 @@ class VendaChaveTrocaController extends Controller
         unset($data['reclamacao']);
         $result = Venda_chave_troca::where('id', $id)->update($data);
 
-        if (!$result) return $this->error(500, 'Erro interno ao atualizar jogo');
+        if (!$result)
+            return $this->error(500, 'Erro interno ao atualizar jogo');
 
 
-        return $this->response(200, 'Jogo atualizado com sucesso', [$data]);
+        return $this->response(200, 'Jogo atualizado com sucesso', $data);
 
         // Identificar o vendedor
         // $fornecedor = Fornecedor::select('*')->where('perfilOrigem', $data['perfilOrigem'])->first();
@@ -248,7 +258,16 @@ class VendaChaveTrocaController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $jogo = Venda_chave_troca::select('*')->where('id', $id)->first();
+        if (!$jogo)
+            return $this->error(404, 'Jogo não encontrado');
+
+
+        $result = Venda_chave_troca::where('id', $id)->delete();
+        if (!$result)
+            return $this->error(500, 'Erro interno ao deletar jogo');
+
+        return $this->response(200, 'Jogo deletado com sucesso', $jogo);
     }
 
     private function criarAdicionarFornecedor($perfilOrigem, $reclamacao)
