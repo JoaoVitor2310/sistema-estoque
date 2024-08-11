@@ -68,7 +68,7 @@ class VendaChaveTrocaController extends Controller
             "devolucoes" => "boolean",
             "dataAdquirida" => ["required", "date"],
             "perfilOrigem" => ["required", "string"],
-            "email" => ["required", "email"],
+            "email" => "email",
         ]);
 
         if ($validator->fails()) {

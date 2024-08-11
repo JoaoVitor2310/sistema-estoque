@@ -18,7 +18,7 @@ return new class extends Migration {
             $table->timestamps();
         });
 
-        DB::table('tipo_formato')->insert([
+        DB::table('ranges_taxa_g2a')->insert([
             ['minimo' => 0, 'maximo' => 0.99, 'taxa' => 0.23],
             ['minimo' => 1, 'maximo' => 2.99, 'taxa' => 0.3],
             ['minimo' => 3, 'maximo' => 3.99, 'taxa' => 0.2775],
@@ -39,7 +39,7 @@ return new class extends Migration {
             ['minimo' => 23, 'maximo' => 23.99, 'taxa' => 0.98],
             ['minimo' => 24, 'maximo' => 25.99, 'taxa' => 0.093],
             ['minimo' => 26, 'maximo' => 49.49, 'taxa' => 0.087],
-            ['minimo' => 49.5, 'maximo' => 1000, 'taxa' => 0.0405],
+            ['minimo' => 49.5, 'maximo' => 999, 'taxa' => 0.0405],
         ]);
     }
 
