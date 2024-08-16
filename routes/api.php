@@ -10,8 +10,8 @@ use Illuminate\Support\Facades\Route;
 // })->middleware('auth:sanctum');
 
 // Autenticação
-Route::get('/prepare-to-login', [AuthController::class,'prepare_to_login'])->name('prepare.login');
-Route::get('/callback', [AuthController::class,'callback'])->name('callback');
+// Route::get('/prepare-to-login', [AuthController::class,'prepare_to_login'])->name('prepare.login');
+// Route::get('/callback', [AuthController::class,'callback'])->name('callback');
 
 Route::post('/game', [VendaChaveTrocaController::class,'store'])->name('store'); // CREATE
 Route::get('/games', [VendaChaveTrocaController::class,'index'])->name('index'); // READ all games

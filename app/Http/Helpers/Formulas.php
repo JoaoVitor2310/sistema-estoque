@@ -1,108 +1,80 @@
 <?php 
 
 namespace App\Http\Helpers;
+use App\Models\Ranges_taxa_G2A;
+
 class Formulas 
 {
     // public function calcValorVenda(){}
     
-    function calcValorVenda($id_formato, $id_plataforma, $precoCliente, $tabelaG2A) {
-        if ($id_formato == 7) {
+    function calcPrecoVenda($formato, $plataforma, $precoCliente) {
+        // Faixas de valores e descontos da tabela G2A
+        $faixas = [
+            [0, 0.99, 0.23],
+            [1, 2.99, 0.3],
+            [3.99, 4.99, 0.2775],
+            [6.99, 7, 0.255],
+            [7.99, 8.99, 0.243],
+            [9, 10.49, 0.2315],
+            [10.5, 10.99, 0.2085],
+            [11, 11.99, 0.197],
+            [12.99, 13.99, 0.185],
+            [14, 14.99, 0.174],
+            [15, 15.99, 0.162],
+            [16, 17.49, 0.156],
+            [17.99, 19.99, 0.145],
+            [20, 21.99, 0.139],
+            [22, 22.99, 0.133],
+            [23, 23.99, 0.116],
+            [25.99, 49.5, 0.11],
+            [49.5, PHP_INT_MAX, 0.0405]
+        ];
+    
+        // Verifica se o formato é "T"
+        if ($formato === "T") {
             return $precoCliente;
         }
     
-        if ($id_plataforma == 3 || $id_plataforma == 4) { // Gamivo ou Kinguin
+        // Verifica se a plataforma é "Gamivo" ou "Kinguin"
+        if ($plataforma === "Gamivo" || $plataforma === "Kinguin") {
             return $precoCliente;
         }
     
-        if ($precoCliente <= $tabelaG2A['A2']) {
+        // Verifica a faixa de preço e aplica o desconto correspondente
+        foreach ($faixas as $faixa) {
+            list($min, $max, $desconto) = $faixa;
+            if ($precoCliente >= $min && $precoCliente <= $max) {
+                return $precoCliente / (1 + $desconto);
+            }
+        }
+    
+        // Retorna o preço original se não encontrar uma faixa correspondente
+        return $precoCliente;
+    }
+
+    function calcularPrecoVenda($formato, $plataforma, $precoCliente) {
+        // Verifica se o formato é "T"
+        if ($formato === "T") {
             return $precoCliente;
         }
     
-        if ($precoCliente >= $tabelaG2A['A2'] && $precoCliente <= $tabelaG2A['B2']) {
-            return $precoCliente / (1 + $tabelaG2A['A3']);
+        // Verifica se a plataforma é "Gamivo" ou "Kinguin"
+        if ($plataforma === "Gamivo" || $plataforma === "Kinguin") {
+            return $precoCliente;
         }
     
-        if ($precoCliente >= $tabelaG2A['C2'] && $precoCliente <= $tabelaG2A['D2']) {
-            return $precoCliente / (1 + $tabelaG2A['C3']);
+        // Busca todas as faixas de preços e taxas da tabela ranges_taxa_g2a
+        $faixas = Ranges_taxa_G2A::all();
+    
+        // Itera sobre as faixas para encontrar a correspondente ao preço do cliente
+        foreach ($faixas as $faixa) {
+            if ($precoCliente >= $faixa->min && $precoCliente <= $faixa->max) {
+                return $precoCliente / (1 + $faixa->taxa);
+            }
         }
     
-        if ($precoCliente >= $tabelaG2A['E2'] && $precoCliente <= $tabelaG2A['F2']) {
-            return $precoCliente / (1 + $tabelaG2A['E3']);
-        }
-    
-        if ($precoCliente >= $tabelaG2A['G2'] && $precoCliente <= $tabelaG2A['H2']) {
-            return $precoCliente / (1 + $tabelaG2A['G3']);
-        }
-    
-        if ($precoCliente >= $tabelaG2A['I2'] && $precoCliente <= $tabelaG2A['J2']) {
-            return $precoCliente / (1 + $tabelaG2A['I3']);
-        }
-    
-        if ($precoCliente >= $tabelaG2A['A4'] && $precoCliente <= $tabelaG2A['B4']) {
-            return $precoCliente / (1 + $tabelaG2A['A5']);
-        }
-    
-        if ($precoCliente >= $tabelaG2A['C4'] && $precoCliente <= $tabelaG2A['D4']) {
-            return $precoCliente / (1 + $tabelaG2A['C5']);
-        }
-    
-        if ($precoCliente >= $tabelaG2A['E4'] && $precoCliente <= $tabelaG2A['F4']) {
-            return $precoCliente / (1 + $tabelaG2A['E5']);
-        }
-    
-        if ($precoCliente >= $tabelaG2A['G4'] && $precoCliente <= $tabelaG2A['H4']) {
-            return $precoCliente / (1 + $tabelaG2A['G5']);
-        }
-    
-        if ($precoCliente >= $tabelaG2A['I4'] && $precoCliente <= $tabelaG2A['J4']) {
-            return $precoCliente / (1 + $tabelaG2A['I5']);
-        }
-    
-        if ($precoCliente >= $tabelaG2A['A6'] && $precoCliente <= $tabelaG2A['B6']) {
-            return $precoCliente / (1 + $tabelaG2A['A7']);
-        }
-    
-        if ($precoCliente >= $tabelaG2A['C6'] && $precoCliente <= $tabelaG2A['D6']) {
-            return $precoCliente / (1 + $tabelaG2A['C7']);
-        }
-    
-        if ($precoCliente >= $tabelaG2A['E6'] && $precoCliente <= $tabelaG2A['F6']) {
-            return $precoCliente / (1 + $tabelaG2A['E7']);
-        }
-    
-        if ($precoCliente >= $tabelaG2A['G6'] && $precoCliente <= $tabelaG2A['H6']) {
-            return $precoCliente / (1 + $tabelaG2A['G7']);
-        }
-    
-        if ($precoCliente >= $tabelaG2A['I6'] && $precoCliente <= $tabelaG2A['J6']) {
-            return $precoCliente / (1 + $tabelaG2A['I7']);
-        }
-    
-        if ($precoCliente >= $tabelaG2A['A8'] && $precoCliente <= $tabelaG2A['B8']) {
-            return $precoCliente / (1 + $tabelaG2A['B9']);
-        }
-    
-        if ($precoCliente >= $tabelaG2A['C8'] && $precoCliente <= $tabelaG2A['D8']) {
-            return $precoCliente / (1 + $tabelaG2A['C9']);
-        }
-    
-        if ($precoCliente >= $tabelaG2A['E8'] && $precoCliente <= $tabelaG2A['F8']) {
-            return $precoCliente / (1 + $tabelaG2A['E9']);
-        }
-    
-        if ($precoCliente >= $tabelaG2A['G8'] && $precoCliente <= $tabelaG2A['H8']) {
-            return $precoCliente / (1 + $tabelaG2A['G9']);
-        }
-    
-        if ($precoCliente >= $tabelaG2A['I8'] && $precoCliente <= $tabelaG2A['J8']) {
-            return $precoCliente / (1 + $tabelaG2A['I9']);
-        }
-    
-        if ($precoCliente >= $tabelaG2A['A10']) {
-            return $precoCliente / (1 + $tabelaG2A['A11']);
-        }
-    
-        return null;
+        // Retorna o preço original se não encontrar uma faixa correspondente
+        return $precoCliente;
     }
 
 

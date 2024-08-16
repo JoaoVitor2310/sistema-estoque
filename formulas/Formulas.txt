@@ -1,5 +1,6 @@
 -Preço Venda
 =SE('Venda-Chave-Troca'!$A2="T";'Venda-Chave-Troca'!$F2;SE(OU('Venda-Chave-Troca'!$E2="Gamivo";'Venda-Chave-Troca'!$E2="Kinguin");'Venda-Chave-Troca'!$F2;SE(E((F2)<='TABELA G2A'!$A$2);F2;SE(E((F2)>='TABELA G2A'!$A$2;(F2)<='TABELA G2A'!$B$2);(F2)/(1+'TABELA G2A'!$A$3);SE(E((F2)>='TABELA G2A'!$C$2;(F2)<='TABELA G2A'!$D$2);(F2)/(1+'TABELA G2A'!$C$3);SE(E((F2)>='TABELA G2A'!$E$2;(F2)<='TABELA G2A'!$F$2);(F2)/(1+'TABELA G2A'!$E$3);SE(E((F2)>='TABELA G2A'!$G$2;(F2)<='TABELA G2A'!$H$2);(F2)/(1+'TABELA G2A'!$G$3);SE(E((F2)>='TABELA G2A'!$I$2;(F2)<='TABELA G2A'!$J$2);(F2)/(1+'TABELA G2A'!$I$3);SE(E((F2)>='TABELA G2A'!$A$4;(F2)<='TABELA G2A'!$B$4);(F2)/(1+'TABELA G2A'!$A$5);SE(E((F2)>='TABELA G2A'!$C$4;(F2)<='TABELA G2A'!$D$4);(F2)/(1+'TABELA G2A'!$C$5);SE(E((F2)>='TABELA G2A'!$E$4;(F2)<='TABELA G2A'!$F$4);(F2)/(1+'TABELA G2A'!$E$5);SE(E((F2)>='TABELA G2A'!$G$4;(F2)<='TABELA G2A'!$H$4);(F2)/(1+'TABELA G2A'!$G$5);SE(E((F2)>='TABELA G2A'!$I$4;(F2)<='TABELA G2A'!$J$4);(F2)/(1+'TABELA G2A'!$I$5);SE(E((F2)>='TABELA G2A'!$A$6;(F2)<='TABELA G2A'!$B$6);(F2)/(1+'TABELA G2A'!$A$7);SE(E((F2)>='TABELA G2A'!$C$6;(F2)<='TABELA G2A'!$D$6);(F2)/(1+'TABELA G2A'!$C$7);SE(E((F2)>='TABELA G2A'!$E$6;(F2)<='TABELA G2A'!$F$6);(F2)/(1+'TABELA G2A'!$E$7);SE(E((F2)>='TABELA G2A'!$G$6;(F2)<='TABELA G2A'!$H$6);(F2)/(1+'TABELA G2A'!$G$7);SE(E((F2)>='TABELA G2A'!$I$6;(F2)<='TABELA G2A'!$J$6);(F2)/(1+'TABELA G2A'!$A$9);SE(E((F2)>='TABELA G2A'!$A$8;(F2)<='TABELA G2A'!$B$8);(F2)/(1+'TABELA G2A'!$B$9);SE(E((F2)>='TABELA G2A'!$C$8;(F2)<='TABELA G2A'!$D$8);(F2)/(1+'TABELA G2A'!$C$9);SE(E((F2)>='TABELA G2A'!$E$8;(F2)<='TABELA G2A'!$F$8);(F2)/(1+'TABELA G2A'!$E$9);SE(E((F2)>='TABELA G2A'!$G$8;(F2)<='TABELA G2A'!$H$8);(F2)/(1+'TABELA G2A'!$G$9);SE(E((F2)>='TABELA G2A'!$I$8;(F2)<='TABELA G2A'!$J$8);(F2)/(1+'TABELA G2A'!$I$9);SE((F2)>='TABELA G2A'!$A$10;(F2)/(1+'TABELA G2A'!$A$11);""))))))))))))))))))))))))
+FEITO
 
 -income real
 =SE('Venda-Chave-Troca'!$A2="T";'Venda-Chave-Troca'!$F2;SE('Venda-Chave-Troca'!$E2="G2A";G2*0,898-(0,4)-((0,15)*N2/O2);SE('Venda-Chave-Troca'!$E2="Gamivo";SE('Venda-Chave-Troca'!$F2<4;(F2*0,95)-(0,1);(F2*0,921)-(0,35));SE('Venda-Chave-Troca'!$E2="Kinguin";(F2*0,8771929)-(0,306);""))))
@@ -30,7 +31,7 @@ FEITO
 Randon Kinguin: (ESSA VEIO DE OUTRA PLANILHA)
 =SE(OU(A2="";B2="");"";SE(E(A2>=16,99;B2>=80);"Deluxe";SE(E(A2>=11,99;B2>=75);"Gold";SE(E(A2>=8,99;B2>=70);"Premium";SE(E(A2>=2,99;B2>=50);"Random";"Não Se Enquandra")))))
 
-legenda colunas
+legenda colunas Venda-Chave-Troca
 A = Formato
 B = chaveRecebida
 C = nomeJogo
@@ -54,6 +55,65 @@ T = dataVenda
 U = dataVendida
 V = perfilOrigem
 W = email
+
+legenda colunas TABELA G2A
+A2 = 0
+B2 = 0,99
+A3 = 0,23
+C2 = 1
+D2 = 2,99
+B3 = 0,3
+E2 = 3,99
+F2 = 4,99
+C3 = 0,2775
+G2 = 6,99
+H2 = 7
+D3 = 0,255
+I2 = 7,99
+A4 = 8
+E3 = 0,243
+B4 = 8,99
+C4 = 9
+A5 = 0,2315
+D4 = 10,49
+E4 = 10,5
+B5 = 0,2085
+F4 = 10,99
+G4 = 11
+C5 = 0,197
+H4 = 11,99
+I4 = 12,99
+D5 = 0,185
+A5 = 13
+B5 = 13,99
+E5 = 0,174
+C5 = 14
+D5 = 14,99
+A7 = 0,162
+E5 = 15
+F5 = 15,99
+B7 = 0,156
+G5 = 16
+H5 = 17,49
+C7 = 0,145
+I5 = 17,99
+A6 = 18
+D7 = 0,139
+B6 = 19,99
+C6 = 20
+E7 = 0,133
+D6 = 21,99
+E6 = 22
+A9 = 0,116
+F6 = 22,99
+G6 = 23
+B9 = 0,11
+H6 = 23,99
+I6 = 25,99
+C9 = 0,098
+A8 = 49,5
+D9 = 0,093
+E9 = 0,087
 
 Outra PLANILHA
 legenda colunas
