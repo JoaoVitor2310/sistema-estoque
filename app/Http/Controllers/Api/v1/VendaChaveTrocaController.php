@@ -69,6 +69,9 @@ class VendaChaveTrocaController extends Controller
             "dataAdquirida" => ["required", "date"],
             "perfilOrigem" => ["required", "string"],
             "email" => "email",
+            "qtdTF2" => "nullable", // A partir daqui é para teste
+            "somatorioIncomes" => "nullable",
+            "primeiroIncome" => "nullable",
         ]);
 
         if ($validator->fails()) {
@@ -98,12 +101,28 @@ class VendaChaveTrocaController extends Controller
         $data['id_fornecedor'] = $this->criarAdicionarFornecedor($data['perfilOrigem'], $data['reclamacao']);
 
 
-
-
-
         // Calcula as fórmulas
+        
+        $precoVenda = $this->formulas->calcPrecoVenda('RK', 'G2A', 10.48); // Rever?
+        
+        $incomeReal = $this->formulas->calcIncomeReal('RK', 'G2A', 1.91, $precoVenda, 1, 1);
+        
+        $incomeSimulado = $this->formulas->calcIncomeSimulado('RK', 'G2A', 1.91, $precoVenda);
+        
+        $valorPagoIndividual = $this->formulas->calcValorPagoIndividual(0.5, 1.3, 1.3);
+        
+        $lucroRS =  $this->formulas->calcLucroReal($data['vendido'], $data['quantidade'], $data['leiloes'], $data['precoCliente'], $valorPagoIndividual, $data['devolucoes']);
+        
+        $lucroPercentual =  $this->formulas->calcLucroPercentual($lucroRS, $valorPagoIndividual);
+        
+        $randomG2A =  $this->formulas->classificacaoRandomG2A($data['precoJogo'], $data['notaMetacritic']);
+        
+        $randomKinguin = $this->formulas->classificacaoRandomKinguin($data['precoJogo'], $data['notaMetacritic']) ;
+        
+        return $this->response(201, 'Jogo cadastrado com sucesso', [$incomeSimulado]);
+        
 
-        // $valorVenda = calcValorVenda($precoCliente);
+
 
         // $lucroPercentual = $this->formulas->calcLucroPercentual();
 
@@ -180,7 +199,7 @@ class VendaChaveTrocaController extends Controller
             "valorPagoIndividual" => "decimal:0,2",
             "quantidade" => "integer",
             "devolucoes" => "boolean",
-            // "lucroR$" => "decimal:0,2",
+            // "lucroRS" => "decimal:0,2",
             // "lucro%" => "decimal:0,2",
             "dataAdquirida" => "date",
             "dataVenda" => "date",

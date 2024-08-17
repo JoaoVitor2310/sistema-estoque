@@ -11,18 +11,16 @@ FEITO
 FEITO
 
 valor pago individual
-A fórmula é preenchida manualmente a cada negociação, o Lucas sabe qual é
-A FAZER
+qtd Tf2 keys na trade * valor da chave / somatorio dos incomes * primeiro income
+FEITO
 
 Lucro Real
 =((((F4)*M4*0,892)-(1,33*M4+(0,57/O4)*N4)-(L4)-(F4)*P4))
-
--> $lucroR$ = ((($precoCliente * $vendido * 0.892) - (1.33 * $vendido + (0.57 / $quantidade) * $leiloes) - $valorPagoIndividual - ($precoCliente * $devolucoes)));
+-> $lucroRS = ((($precoCliente * $vendido * 0.892) - (1.33 * $vendido + (0.57 / $quantidade) * $leiloes) - $valorPagoIndividual - ($precoCliente * $devolucoes)));
 
 Lucro %
 =Q4/L4
-
--> $lucro% = $lucroR$ / $valorPagoIndividual;
+-> $lucro% = $lucroRS / $valorPagoIndividual;
 
 Random G2A: (ESSA VEIO DE OUTRA PLANILHA)
 =SE(E(A4776>=39,99;B4776>=80);"VIP";SE(E(A4776>=29,99;B4776>=80);"Diamond";SE(E(A4776>=24,99;B4776>=70);"Elite";SE(E(A4776>=19,99;B4776>=80);"Legendary";SE(E(A4776>=10;B4776>=70);"Gold";SE(E(A4776>=8;B4776>=75);"Premium";SE(E(A4776<8;A4776<>0);"Random";SE(E(B4776<70;B4776<>0);"Random";""))))))))
@@ -48,7 +46,7 @@ m = vendido
 N = leiloes
 0 = quantidade
 P = devoluções
-Q = lucroR$
+Q = lucroRS
 R = lucro%
 S = dataAdquirida
 T = dataVenda

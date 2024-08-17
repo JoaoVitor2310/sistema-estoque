@@ -2,12 +2,13 @@
 
 namespace App\Http\Helpers;
 use App\Models\Ranges_taxa_G2A;
+use App\Models\Recursos;
 
 class Formulas 
 {
     // public function calcValorVenda(){}
     
-    function calcPrecoVenda($formato, $plataforma, $precoCliente) {
+    public function calcPrecoVenda($formato, $plataforma, $precoCliente) {
         // Faixas de valores e descontos da tabela G2A
         $faixas = [
             [0, 0.99, 0.23],
@@ -43,9 +44,10 @@ class Formulas
         // Verifica a faixa de preço e aplica o desconto correspondente
         foreach ($faixas as $faixa) {
             list($min, $max, $desconto) = $faixa;
-            if ($precoCliente >= $min && $precoCliente <= $max) {
-                return $precoCliente / (1 + $desconto);
-            }
+        if ($precoCliente >= $min && $precoCliente <= $max) {
+            // Usando bcdiv para maior precisão
+            return bcdiv($precoCliente, (1 + $desconto), 2);
+        }
         }
     
         // Retorna o preço original se não encontrar uma faixa correspondente
@@ -121,7 +123,13 @@ class Formulas
         return $resultado;
     }
 
-    public function calcValorPagoIndividual(){}
+    public function calcValorPagoIndividual($qtdTF2, $somatorioIncomes, $primeiroIncome){
+        $recursoModel = new Recursos();
+
+        $valorChaveEUR = $recursoModel->select('*')->where('nome', 'TF2')->first()['precoEUR'];
+        return $qtdTF2 * $valorChaveEUR / $somatorioIncomes * $primeiroIncome;
+        // return $valorChaveEUR;
+    }
     public function calcLucroReal($vendido, $quantidade, $leiloes, $precoCliente, $valorPagoIndividual, $devolucoes){
         return $precoCliente * $vendido * 0.892 - (1.33 * $vendido + (0.57 / $quantidade) * $leiloes) - $valorPagoIndividual - $precoCliente * $devolucoes;
     }

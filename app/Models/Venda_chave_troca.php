@@ -37,7 +37,7 @@ class Venda_chave_troca extends Model
         "leiloes",
         "quantidade",
         "devolucoes",
-        "lucroR$",
+        "lucroRS",
         "lucro%",
         "dataAdquirida",
         "dataVenda",

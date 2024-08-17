@@ -56,7 +56,7 @@ return new class extends Migration
             $table->integer('leiloes')->default(0);
             $table->integer('quantidade')->default(0);
             $table->boolean('devolucoes')->nullable();
-            $table->decimal('lucroR$', total: 8, places: 2)->default(0);
+            $table->decimal('lucroRS', total: 8, places: 2)->default(0);
             $table->decimal('lucro%', total: 8, places: 2)->default(0);
             $table->date('dataAdquirida')->nullable();
             $table->date('dataVenda')->nullable();
