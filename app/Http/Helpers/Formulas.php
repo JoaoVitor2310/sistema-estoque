@@ -6,72 +6,25 @@ use App\Models\Recursos;
 
 class Formulas 
 {
-    // public function calcValorVenda(){}
-    
-    public function calcPrecoVenda($formato, $plataforma, $precoCliente) {
-        // Faixas de valores e descontos da tabela G2A
-        $faixas = [
-            [0, 0.99, 0.23],
-            [1, 2.99, 0.3],
-            [3.99, 4.99, 0.2775],
-            [6.99, 7, 0.255],
-            [7.99, 8.99, 0.243],
-            [9, 10.49, 0.2315],
-            [10.5, 10.99, 0.2085],
-            [11, 11.99, 0.197],
-            [12.99, 13.99, 0.185],
-            [14, 14.99, 0.174],
-            [15, 15.99, 0.162],
-            [16, 17.49, 0.156],
-            [17.99, 19.99, 0.145],
-            [20, 21.99, 0.139],
-            [22, 22.99, 0.133],
-            [23, 23.99, 0.116],
-            [25.99, 49.5, 0.11],
-            [49.5, PHP_INT_MAX, 0.0405]
-        ];
-    
+    function calcPrecoVenda($idFormato, $idPlataforma, $precoCliente) {
         // Verifica se o formato é "T"
-        if ($formato === "T") {
+        if ($idFormato === 7) {
             return $precoCliente;
         }
     
-        // Verifica se a plataforma é "Gamivo" ou "Kinguin"
-        if ($plataforma === "Gamivo" || $plataforma === "Kinguin") {
-            return $precoCliente;
-        }
-    
-        // Verifica a faixa de preço e aplica o desconto correspondente
-        foreach ($faixas as $faixa) {
-            list($min, $max, $desconto) = $faixa;
-        if ($precoCliente >= $min && $precoCliente <= $max) {
-            // Usando bcdiv para maior precisão
-            return bcdiv($precoCliente, (1 + $desconto), 2);
-        }
-        }
-    
-        // Retorna o preço original se não encontrar uma faixa correspondente
-        return $precoCliente;
-    }
-
-    function calcularPrecoVenda($formato, $plataforma, $precoCliente) {
-        // Verifica se o formato é "T"
-        if ($formato === "T") {
-            return $precoCliente;
-        }
-    
-        // Verifica se a plataforma é "Gamivo" ou "Kinguin"
-        if ($plataforma === "Gamivo" || $plataforma === "Kinguin") {
+        // Verifica se a Plataforma é "Gamivo" ou "Kinguin"
+        if ($idPlataforma === 3 || $idPlataforma === 4) {
             return $precoCliente;
         }
     
         // Busca todas as faixas de preços e taxas da tabela ranges_taxa_g2a
         $faixas = Ranges_taxa_G2A::all();
+        // return $faixas;
     
         // Itera sobre as faixas para encontrar a correspondente ao preço do cliente
         foreach ($faixas as $faixa) {
-            if ($precoCliente >= $faixa->min && $precoCliente <= $faixa->max) {
-                return $precoCliente / (1 + $faixa->taxa);
+            if ($precoCliente >= $faixa->minimo && $precoCliente <= $faixa->maximo) {
+                return round($precoCliente / (1 + $faixa->taxa), 2);
             }
         }
     
@@ -81,20 +34,20 @@ class Formulas
 
 
 
-    public function calcIncomeReal($formato, $plataforma, $precoCliente, $precoVenda, $leiloes, $quantidade) {
+    public function calcIncomeReal($idFormato, $idPlataforma, $precoCliente, $precoVenda, $leiloes, $quantidade) {
         $resultado = 0;
     
-        if ($formato == "T") {
+        if ($idFormato == 7) { // Troca
             $resultado = $precoCliente;
-        } else if ($plataforma == "G2A") {
+        } else if ($idPlataforma == 2) { // G2A
             $resultado = $precoVenda * 0.898 - 0.4 - (0.15 * $leiloes / $quantidade);
-        } else if ($plataforma == "Gamivo") {
+        } else if ($idPlataforma == 3) { // Gamivo
             if ($precoCliente < 4) {
                 $resultado = ($precoCliente * 0.95) - 0.1;
             } else {
                 $resultado = ($precoCliente * 0.921) - 0.35;
             }
-        } else if ($plataforma == "Kinguin") {
+        } else if ($idPlataforma == 4) { // Kinguin
             $resultado = ($precoCliente * 0.8771929) - 0.306;
         } else {
             $resultado = ""; // Valor padrão caso nenhuma condição seja atendida
@@ -103,20 +56,20 @@ class Formulas
         return $resultado;
     } 
 
-    public function calcIncomeSimulado($formato, $plataforma, $precoCliente, $precoVenda) {
+    public function calcIncomeSimulado($idFormato, $idPlataforma, $precoCliente, $precoVenda) {
         $resultado = 0;
     
-        if ($formato == "T") {
+        if ($idFormato == 7) { // Troca
             $resultado = $precoCliente;
-        } else if ($plataforma == "gamivo") {
+        } else if ($idPlataforma == 3) { // Gamivo
             if ($precoCliente > 4) {
                 $resultado = $precoVenda + (-0.079 * $precoVenda) - 0.35;
             } else {
                 $resultado = $precoVenda - (0.05 * $precoVenda) - 0.1;
             }
-        } else if ($plataforma == "G2A") {
+        } else if ($idPlataforma == 2) { // G2A
             $resultado = $precoVenda * 0.898 - 0.55;
-        } else { // Kinguin?
+        } else { // Kinguin
             $resultado = $precoVenda + (-0.1228071 * $precoVenda) - 0.306;
         }
     
@@ -130,12 +83,34 @@ class Formulas
         return $qtdTF2 * $valorChaveEUR / $somatorioIncomes * $primeiroIncome;
         // return $valorChaveEUR;
     }
-    public function calcLucroReal($vendido, $quantidade, $leiloes, $precoCliente, $valorPagoIndividual, $devolucoes){
-        return $precoCliente * $vendido * 0.892 - (1.33 * $vendido + (0.57 / $quantidade) * $leiloes) - $valorPagoIndividual - $precoCliente * $devolucoes;
+    function calcLucroReal($incomeSimulado, $valorPagoIndividual) {
+        // Verifica se incomeSimulado não está vazio ou nulo
+        if (!empty($incomeSimulado)) {
+            // Retorna a subtração entre incomeSimulado e valorPagoIndividual
+            return $incomeSimulado - $valorPagoIndividual;
+        } else {
+            // Retorna uma string vazia se incomeSimulado estiver vazio
+            return 0.00;
+        }
     }
-    public function calcLucroPercentual($lucroRS, $valorPagoIndividual){
-        return  $lucroRS /$valorPagoIndividual;
+
+    // public function calcularLucroReal($vendido, $quantidade, $leiloes, $precoCliente, $valorPagoIndividual, $devolucoes){
+    //     return $precoCliente * $vendido * 0.892 - (1.33 * $vendido + (0.57 / $quantidade) * $leiloes) - $valorPagoIndividual - $precoCliente * $devolucoes;
+    // }
+    function calcLucroPercentual($lucroRS, $valorPagoIndividual) {
+        // Verifica se lucroRS não está vazio ou nulo
+        if (!empty($lucroRS)) {
+            // Retorna a divisão entre lucroRS e valorPagoIndividual
+            return round(($lucroRS / $valorPagoIndividual) * 100, 2);
+        } else {
+            // Retorna uma string vazia se lucroRS estiver vazio
+            return 0.00;
+        }
     }
+    
+    // public function calcularLucroPercentual($lucroRS, $valorPagoIndividual){
+    //     return  $lucroRS /$valorPagoIndividual;
+    // }
     public function classificacaoRandomG2A($precoJogo, $nota){
         if ($precoJogo >= 39.99 && $nota >= 80) {
             return "VIP";

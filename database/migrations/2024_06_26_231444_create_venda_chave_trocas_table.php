@@ -29,6 +29,7 @@ return new class extends Migration
             $table->integer('notaMetacritic')->default(0);
             $table->boolean('isSteam')->nullable();
             $table->string('randomClassificationG2A')->nullable();
+            $table->string('randomClassificationKinguin')->nullable();
             $table->string('observacao')->nullable();
 
             $table->integer('id_leilao_G2A')->default(1);
@@ -57,7 +58,7 @@ return new class extends Migration
             $table->integer('quantidade')->default(0);
             $table->boolean('devolucoes')->nullable();
             $table->decimal('lucroRS', total: 8, places: 2)->default(0);
-            $table->decimal('lucro%', total: 8, places: 2)->default(0);
+            $table->decimal('lucroPercentual', total: 8, places: 2)->default(0);
             $table->date('dataAdquirida')->nullable();
             $table->date('dataVenda')->nullable();
             $table->date('dataVendida')->nullable();

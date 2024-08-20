@@ -103,23 +103,23 @@ class VendaChaveTrocaController extends Controller
 
         // Calcula as fórmulas
         
-        $precoVenda = $this->formulas->calcPrecoVenda('RK', 'G2A', 10.48); // Rever?
+        $data['precoVenda'] = $this->formulas->calcPrecoVenda($data['tipo_formato_id'], $data['id_plataforma'], $data['precoCliente']); // FEITO
+
+        $data['incomeReal'] = $this->formulas->calcIncomeReal($data['tipo_formato_id'], $data['id_plataforma'], $data['precoCliente'], $data['precoVenda'], $data['leiloes'], $data['quantidade']); // FEITO
         
-        $incomeReal = $this->formulas->calcIncomeReal('RK', 'G2A', 1.91, $precoVenda, 1, 1);
+        $data['incomeSimulado'] = $this->formulas->calcIncomeSimulado($data['tipo_formato_id'], $data['id_plataforma'], $data['precoCliente'], $data['precoVenda']); // FEITO
         
-        $incomeSimulado = $this->formulas->calcIncomeSimulado('RK', 'G2A', 1.91, $precoVenda);
+        $data['valorPagoIndividual'] = $this->formulas->calcValorPagoIndividual($data['qtdTF2'], $data['somatorioIncomes'], $data['primeiroIncome']); // CONFERIR
         
-        $valorPagoIndividual = $this->formulas->calcValorPagoIndividual(0.5, 1.3, 1.3);
+        $data['lucroRS'] =  $this->formulas->calcLucroReal($data['incomeSimulado'], $data['valorPagoIndividual']);
         
-        $lucroRS =  $this->formulas->calcLucroReal($data['vendido'], $data['quantidade'], $data['leiloes'], $data['precoCliente'], $valorPagoIndividual, $data['devolucoes']);
+        $data['lucroPercentual'] =  $this->formulas->calcLucroPercentual($data['lucroRS'], $data['valorPagoIndividual']);
         
-        $lucroPercentual =  $this->formulas->calcLucroPercentual($lucroRS, $valorPagoIndividual);
+        $data['randomClassificationG2A'] =  $this->formulas->classificacaoRandomG2A($data['precoJogo'], $data['notaMetacritic']);
         
-        $randomG2A =  $this->formulas->classificacaoRandomG2A($data['precoJogo'], $data['notaMetacritic']);
+        $data['randomClassificationKinguin'] = $this->formulas->classificacaoRandomKinguin($data['precoJogo'], $data['notaMetacritic']) ;
         
-        $randomKinguin = $this->formulas->classificacaoRandomKinguin($data['precoJogo'], $data['notaMetacritic']) ;
-        
-        return $this->response(201, 'Jogo cadastrado com sucesso', [$incomeSimulado]);
+        // return $this->response(201, 'Jogo cadastrado com sucesso', [$data['lucroPercentual']]);
         
 
 
