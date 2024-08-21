@@ -64,12 +64,15 @@ class VendaChaveTrocaController extends Controller
             "precoCliente" => ["required", "decimal:0,2"],
             "chaveEntregue" => ["string", "nullable"],
             "valorPagoTotal" => "required",
+            // "valorPagoIndividual" => "decimal:0,2",
+            "vendido" => "boolean",
+            "leiloes" => "integer|min:0",
             "quantidade" => "required",
             "devolucoes" => "boolean",
             "dataAdquirida" => ["required", "date"],
             "perfilOrigem" => ["required", "string"],
             "email" => "email",
-            "qtdTF2" => "nullable", // A partir daqui é para teste
+            "qtdTF2" => "nullable", // A partir daqui é para valorPagoIndividual
             "somatorioIncomes" => "nullable",
             "primeiroIncome" => "nullable",
         ]);
@@ -80,37 +83,11 @@ class VendaChaveTrocaController extends Controller
 
         $data = $validator->getData();
 
-        // Identificar o vendedor e adicionar +1 para ele
-        // $fornecedor = Fornecedor::select('*')->where('perfilOrigem', $data['perfilOrigem'])->first();
-
-        // if (!$fornecedor) { // Se não tiver o fornecedor, cria ele
-        //     $newFornecedor['perfilOrigem'] = $data['perfilOrigem'];
-        //     if ($data['reclamacao'] == true)
-        //         $newFornecedor['quantidade_reclamacoes'] = 1; // Se tiver reclamação, adiciona +1
-        //     $fornecedor = Fornecedor::create($newFornecedor);
-        //     // return $this->error(400, $fornecedor);
-        // } else {
-        //     // Existe o fornecedor, irá somar mais uma reclamação só se tiver mandado reclamação
-        //     if ($data['reclamacao'] == true) {
-        //         $fornecedor->where('perfilOrigem', $data['perfilOrigem'])->update(['quantidade_reclamacoes' => $fornecedor->quantidade_reclamacoes + 1]);
-        //         // $fornecedor['quantidade_reclamacoes'] = $fornecedor->quantidade_reclamacoes;
-        //     }
-        // }
-
-        // $data['id_fornecedor'] = $fornecedor->id;
         $data['id_fornecedor'] = $this->criarAdicionarFornecedor($data['perfilOrigem'], $data['reclamacao']);
 
 
         // Calcula as fórmulas
-        // Checar reclamação vendedores
         $data = $this->calculateFormulas($data);
-        
-        // return $this->response(201, 'Jogo cadastrado com sucesso', [$data]);
-
-
-
-        // $lucroPercentual = $this->formulas->calcLucroPercentual();
-
 
         try {
             $created = Venda_chave_troca::create($data);
@@ -127,19 +104,6 @@ class VendaChaveTrocaController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
 
-
-
-
-
-        // return response()->json($validator->validated(), 200);
-
-        // $created = Venda_chave_troca::create($validator->validated());
-
-        // if($created){
-        //     return $this->response(201, 'Jogo cadastrado com sucesso');
-        // }
-
-        return $this->error(400, 'Something went wrong!');
     }
 
     /**
@@ -181,7 +145,9 @@ class VendaChaveTrocaController extends Controller
             // "incomeSimulado" =>  "decimal:0,2",
             "chaveEntregue" => ["string", "nullable"],
             "valorPagoTotal" => "decimal:0,2",
-            "valorPagoIndividual" => "decimal:0,2",
+            // "valorPagoIndividual" => "decimal:0,2",
+            "vendido" => "boolean",
+            "leiloes" => "integer|min:0",
             "quantidade" => "integer",
             "devolucoes" => "boolean",
             // "lucroRS" => "decimal:0,2",
@@ -191,6 +157,9 @@ class VendaChaveTrocaController extends Controller
             "dataVendida" => "date",
             "perfilOrigem" => "string",
             "email" => "email",
+            "qtdTF2" => "nullable", // A partir daqui é para valorPagoIndividual
+            "somatorioIncomes" => "nullable",
+            "primeiroIncome" => "nullable",
         ]);
 
         if ($validator->fails()) {
@@ -199,35 +168,49 @@ class VendaChaveTrocaController extends Controller
 
         $data = $validator->validated();
 
+        if (!$data['reclamacao'])
+            $data['tipo_reclamacao_id'] = 1; // Se não tiver reclamação, já coloca como id 1
+
+        // Lógica para fornecedores
+
         // $data['perfilOrigem'] == $jogo
         $fornecedorCadastrado = Fornecedor::select('*')->where('perfilOrigem', $jogo['perfilOrigem'])->first();
 
         $fornecedorEnviado = Fornecedor::select('*')->where('perfilOrigem', $data['perfilOrigem'])->first();
-        if (!$fornecedorEnviado) { // Se não existe o forncedor enviado, cria
+        if (!$fornecedorEnviado) { // Se não existe o fornecedor enviado, cria
             $data['id_fornecedor'] = $this->criarAdicionarFornecedor($data['perfilOrigem'], $data['reclamacao']);
             // Diminui uma reclamação do fornecedor cadastrado
 
             $fornecedorCadastrado->where('perfilOrigem', $jogo['perfilOrigem'])->update(['quantidade_reclamacoes' => $fornecedorCadastrado->quantidade_reclamacoes - 1]);
         } else {
-            // Comparar pra ver se é o mesmo fornecedor
-
-            if ($fornecedorEnviado['id'] != $fornecedorCadastrado['id']) {
+            
+            if ($fornecedorEnviado['id'] != $fornecedorCadastrado['id']) { // Comparar pra ver se é o mesmo fornecedor
                 // Diminuir uma reclamação do fornedor cadastrado e adicionar para o enviado
-                $fornecedorCadastrado->where('id', $fornecedorCadastrado['id'])->update(['quantidade_reclamacoes' => $fornecedorCadastrado->quantidade_reclamacoes - 1]);
+                if ($fornecedorCadastrado->quantidade_reclamacoes > 0)
+                    $fornecedorCadastrado->where('id', $fornecedorCadastrado['id'])->update(['quantidade_reclamacoes' => $fornecedorCadastrado->quantidade_reclamacoes - 1]);
                 $fornecedorEnviado->where('id', $fornecedorEnviado['id'])->update(['quantidade_reclamacoes' => $fornecedorEnviado->quantidade_reclamacoes + 1]);
+            } else { // Se for o mesmo, verifica se mudou de true para false e retira um
+                if ($jogo['tipo_reclamacao_id'] == 1 && $data['reclamacao']) { // NÃO tinha reclamação e agora tem
+                    $fornecedorEnviado->where('id', $fornecedorEnviado['id'])->update(['quantidade_reclamacoes' => $fornecedorEnviado->quantidade_reclamacoes + 1]);
+                } else { // Tinha reclamação e agora não tem
+                    if ($fornecedorEnviado->quantidade_reclamacoes > 0)
+                        $fornecedorEnviado->where('id', $fornecedorEnviado['id'])->update(['quantidade_reclamacoes' => $fornecedorEnviado->quantidade_reclamacoes - 1]);
+                }
+                // return $this->response(200, 'caiu no else', [$jogo]);
             }
-            // Se for o mesmo, não faz nada
+
             $data['id_fornecedor'] = $fornecedorEnviado['id'];
         }
 
         unset($data['reclamacao']);
 
         // Calcula as fórmulas?
-        // Checar reclamação vendedores
         $data = $this->calculateFormulas($data);
 
 
-
+        unset($data['qtdTF2']);
+        unset($data['somatorioIncomes']);
+        unset($data['primeiroIncome']);
         $result = Venda_chave_troca::where('id', $id)->update($data);
 
         if (!$result)
@@ -236,31 +219,9 @@ class VendaChaveTrocaController extends Controller
 
         return $this->response(200, 'Jogo atualizado com sucesso', $data);
 
-        // Identificar o vendedor
-        // $fornecedor = Fornecedor::select('*')->where('perfilOrigem', $data['perfilOrigem'])->first();
-
-        // if (!$fornecedor) {
-        //     return $this->error(404, 'Fornecedor não encontrado');
-        // }
-
-        // // Existe o fornecedor, irá somar mais uma reclamação só se tiver mandado reclamação
-        // if ($data['reclamacao'] == true) {
-        //     $fornecedor->where('perfilOrigem', $data['perfilOrigem'])->update(['quantidade_reclamacoes' => $fornecedor->quantidade_reclamacoes + 1]);
-        // }
-
-        // $data['id_fornecedor'] = $fornecedor->id;
         $data['id_fornecedor'] = $this->criarAdicionarFornecedor($data['perfilOrigem'], $data['reclamacao']);
 
-
-
-
-
-
-
-
         return $this->response(200, 'Jogo atualizado com sucesso', $game);
-
-        // return $this->response(200, 'Jogo atualizado com sucesso');
 
     }
 
@@ -304,21 +265,22 @@ class VendaChaveTrocaController extends Controller
         return $fornecedor->id;
     }
 
-    private function calculateFormulas($data){
+    private function calculateFormulas($data)
+    {
         $data['precoVenda'] = $this->formulas->calcPrecoVenda($data['tipo_formato_id'], $data['id_plataforma'], $data['precoCliente']); // FEITO
 
         $data['incomeReal'] = $this->formulas->calcIncomeReal($data['tipo_formato_id'], $data['id_plataforma'], $data['precoCliente'], $data['precoVenda'], $data['leiloes'], $data['quantidade']); // FEITO
-        
+
         $data['incomeSimulado'] = $this->formulas->calcIncomeSimulado($data['tipo_formato_id'], $data['id_plataforma'], $data['precoCliente'], $data['precoVenda']); // FEITO
-        
+
         $data['valorPagoIndividual'] = $this->formulas->calcValorPagoIndividual($data['qtdTF2'], $data['somatorioIncomes'], $data['primeiroIncome']); // CONFERIR
-        
-        $data['lucroRS'] =  $this->formulas->calcLucroReal($data['incomeSimulado'], $data['valorPagoIndividual']);
-        
-        $data['lucroPercentual'] =  $this->formulas->calcLucroPercentual($data['lucroRS'], $data['valorPagoIndividual']);
-        
-        $data['randomClassificationG2A'] =  $this->formulas->classificacaoRandomG2A($data['precoJogo'], $data['notaMetacritic']);
-        
+
+        $data['lucroRS'] = $this->formulas->calcLucroReal($data['incomeSimulado'], $data['valorPagoIndividual']);
+
+        $data['lucroPercentual'] = $this->formulas->calcLucroPercentual($data['lucroRS'], $data['valorPagoIndividual']);
+
+        $data['randomClassificationG2A'] = $this->formulas->classificacaoRandomG2A($data['precoJogo'], $data['notaMetacritic']);
+
         $data['randomClassificationKinguin'] = $this->formulas->classificacaoRandomKinguin($data['precoJogo'], $data['notaMetacritic']);
 
         return $data;
