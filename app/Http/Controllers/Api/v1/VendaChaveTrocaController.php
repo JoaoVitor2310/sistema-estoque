@@ -102,25 +102,10 @@ class VendaChaveTrocaController extends Controller
 
 
         // Calcula as fórmulas
+        // Checar reclamação vendedores
+        $data = $this->calculateFormulas($data);
         
-        $data['precoVenda'] = $this->formulas->calcPrecoVenda($data['tipo_formato_id'], $data['id_plataforma'], $data['precoCliente']); // FEITO
-
-        $data['incomeReal'] = $this->formulas->calcIncomeReal($data['tipo_formato_id'], $data['id_plataforma'], $data['precoCliente'], $data['precoVenda'], $data['leiloes'], $data['quantidade']); // FEITO
-        
-        $data['incomeSimulado'] = $this->formulas->calcIncomeSimulado($data['tipo_formato_id'], $data['id_plataforma'], $data['precoCliente'], $data['precoVenda']); // FEITO
-        
-        $data['valorPagoIndividual'] = $this->formulas->calcValorPagoIndividual($data['qtdTF2'], $data['somatorioIncomes'], $data['primeiroIncome']); // CONFERIR
-        
-        $data['lucroRS'] =  $this->formulas->calcLucroReal($data['incomeSimulado'], $data['valorPagoIndividual']);
-        
-        $data['lucroPercentual'] =  $this->formulas->calcLucroPercentual($data['lucroRS'], $data['valorPagoIndividual']);
-        
-        $data['randomClassificationG2A'] =  $this->formulas->classificacaoRandomG2A($data['precoJogo'], $data['notaMetacritic']);
-        
-        $data['randomClassificationKinguin'] = $this->formulas->classificacaoRandomKinguin($data['precoJogo'], $data['notaMetacritic']) ;
-        
-        // return $this->response(201, 'Jogo cadastrado com sucesso', [$data['lucroPercentual']]);
-        
+        // return $this->response(201, 'Jogo cadastrado com sucesso', [$data]);
 
 
 
@@ -236,6 +221,13 @@ class VendaChaveTrocaController extends Controller
         }
 
         unset($data['reclamacao']);
+
+        // Calcula as fórmulas?
+        // Checar reclamação vendedores
+        $data = $this->calculateFormulas($data);
+
+
+
         $result = Venda_chave_troca::where('id', $id)->update($data);
 
         if (!$result)
@@ -289,6 +281,8 @@ class VendaChaveTrocaController extends Controller
         return $this->response(200, 'Jogo deletado com sucesso', $jogo);
     }
 
+    // Funções auxiliares
+
     private function criarAdicionarFornecedor($perfilOrigem, $reclamacao)
     {
         $fornecedor = Fornecedor::select('*')->where('perfilOrigem', $perfilOrigem)->first();
@@ -308,5 +302,25 @@ class VendaChaveTrocaController extends Controller
         }
 
         return $fornecedor->id;
+    }
+
+    private function calculateFormulas($data){
+        $data['precoVenda'] = $this->formulas->calcPrecoVenda($data['tipo_formato_id'], $data['id_plataforma'], $data['precoCliente']); // FEITO
+
+        $data['incomeReal'] = $this->formulas->calcIncomeReal($data['tipo_formato_id'], $data['id_plataforma'], $data['precoCliente'], $data['precoVenda'], $data['leiloes'], $data['quantidade']); // FEITO
+        
+        $data['incomeSimulado'] = $this->formulas->calcIncomeSimulado($data['tipo_formato_id'], $data['id_plataforma'], $data['precoCliente'], $data['precoVenda']); // FEITO
+        
+        $data['valorPagoIndividual'] = $this->formulas->calcValorPagoIndividual($data['qtdTF2'], $data['somatorioIncomes'], $data['primeiroIncome']); // CONFERIR
+        
+        $data['lucroRS'] =  $this->formulas->calcLucroReal($data['incomeSimulado'], $data['valorPagoIndividual']);
+        
+        $data['lucroPercentual'] =  $this->formulas->calcLucroPercentual($data['lucroRS'], $data['valorPagoIndividual']);
+        
+        $data['randomClassificationG2A'] =  $this->formulas->classificacaoRandomG2A($data['precoJogo'], $data['notaMetacritic']);
+        
+        $data['randomClassificationKinguin'] = $this->formulas->classificacaoRandomKinguin($data['precoJogo'], $data['notaMetacritic']);
+
+        return $data;
     }
 }

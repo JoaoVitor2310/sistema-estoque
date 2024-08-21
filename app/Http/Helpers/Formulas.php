@@ -2,10 +2,22 @@
 
 namespace App\Http\Helpers;
 use App\Models\Ranges_taxa_G2A;
+use App\Models\Taxas;
 use App\Models\Recursos;
 
 class Formulas 
 {
+
+    private $taxasModel, $gamivoPercentualMaior4, $gamivoFixoMaior4, $gamivoPercentualMenor4, $gamivoFixoMenor4;
+
+    public function __construct() {
+        $this->taxasModel = new Taxas();
+        $this->gamivoPercentualMaior4 = $this->taxasModel->where('nome', 'gamivoPercentualMaior4')->first()->preco;
+        $this->gamivoFixoMaior4 = $this->taxasModel->where('nome', 'gamivoFixoMaior4')->first()->preco;
+        $this->gamivoPercentualMenor4 = $this->taxasModel->where('nome', 'gamivoPercentualMenor4')->first()->preco;
+        $this->gamivoFixoMenor4 = $this->taxasModel->where('nome', 'gamivoFixoMenor4')->first()->preco;
+    }
+
     function calcPrecoVenda($idFormato, $idPlataforma, $precoCliente) {
         // Verifica se o formato é "T"
         if ($idFormato === 7) {
@@ -32,8 +44,6 @@ class Formulas
         return $precoCliente;
     }
 
-
-
     public function calcIncomeReal($idFormato, $idPlataforma, $precoCliente, $precoVenda, $leiloes, $quantidade) {
         $resultado = 0;
     
@@ -43,9 +53,9 @@ class Formulas
             $resultado = $precoVenda * 0.898 - 0.4 - (0.15 * $leiloes / $quantidade);
         } else if ($idPlataforma == 3) { // Gamivo
             if ($precoCliente < 4) {
-                $resultado = ($precoCliente * 0.95) - 0.1;
+                $resultado = ($precoCliente * $this->gamivoPercentualMenor4) - $this->gamivoFixoMenor4; // $resultado = ($precoCliente * 0.95) - 0.1;
             } else {
-                $resultado = ($precoCliente * 0.921) - 0.35;
+                $resultado = ($precoCliente * $this->gamivoPercentualMaior4) - $this->gamivoFixoMaior4; // $resultado = ($precoCliente * 0.921) - 0.35;
             }
         } else if ($idPlataforma == 4) { // Kinguin
             $resultado = ($precoCliente * 0.8771929) - 0.306;
@@ -53,7 +63,7 @@ class Formulas
             $resultado = ""; // Valor padrão caso nenhuma condição seja atendida
         }
     
-        return $resultado;
+        return round($resultado, 2);
     } 
 
     public function calcIncomeSimulado($idFormato, $idPlataforma, $precoCliente, $precoVenda) {
@@ -63,9 +73,9 @@ class Formulas
             $resultado = $precoCliente;
         } else if ($idPlataforma == 3) { // Gamivo
             if ($precoCliente > 4) {
-                $resultado = $precoVenda + (-0.079 * $precoVenda) - 0.35;
+                $resultado = $precoVenda + (-$this->gamivoPercentualMaior4 * $precoVenda) - $this->gamivoFixoMaior4;
             } else {
-                $resultado = $precoVenda - (0.05 * $precoVenda) - 0.1;
+                $resultado = $precoVenda - ($this->gamivoPercentualMenor4 * $precoVenda) - $this->gamivoFixoMenor4;
             }
         } else if ($idPlataforma == 2) { // G2A
             $resultado = $precoVenda * 0.898 - 0.55;
@@ -73,7 +83,7 @@ class Formulas
             $resultado = $precoVenda + (-0.1228071 * $precoVenda) - 0.306;
         }
     
-        return $resultado;
+        return round($resultado, 2);
     }
 
     public function calcValorPagoIndividual($qtdTF2, $somatorioIncomes, $primeiroIncome){
@@ -87,7 +97,7 @@ class Formulas
         // Verifica se incomeSimulado não está vazio ou nulo
         if (!empty($incomeSimulado)) {
             // Retorna a subtração entre incomeSimulado e valorPagoIndividual
-            return $incomeSimulado - $valorPagoIndividual;
+            return round($incomeSimulado - $valorPagoIndividual, 2);
         } else {
             // Retorna uma string vazia se incomeSimulado estiver vazio
             return 0.00;
