@@ -4,6 +4,11 @@ namespace app\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Fornecedor;
+use App\Models\Tipo_reclamacao;
+use App\Models\Tipo_formato;
+use App\Models\Tipo_leilao;
+use App\Models\Plataforma;
 
 class Venda_chave_troca extends Model
 {
@@ -23,7 +28,7 @@ class Venda_chave_troca extends Model
         "randomClassificationG2A",
         "randomClassificationKinguin",
         "observacao",
-        "id_leilao_G2A",
+        "id_leilao_g2a",
         "id_leilao_gamivo",
         "id_leilao_kinguin",
         "plataforma",
@@ -45,5 +50,50 @@ class Venda_chave_troca extends Model
         "dataVendida",
         "perfilOrigem",
         "email"
+    ];
+
+    public function fornecedor()
+    {
+        return $this->belongsTo(Fornecedor::class, 'id_fornecedor');
+    }
+
+    public function tipoReclamacao()
+    {
+        return $this->belongsTo(Tipo_reclamacao::class, 'tipo_reclamacao_id');
+    }
+
+    public function tipoFormato()
+    {
+        return $this->belongsTo(Tipo_formato::class, 'tipo_formato_id');
+    }
+
+    public function leilaoG2A()
+    {
+        return $this->belongsTo(Tipo_leilao::class, 'id_leilao_g2a');
+    }
+
+    public function leilaoGamivo()
+    {
+        return $this->belongsTo(Tipo_leilao::class, 'id_leilao_gamivo');
+    }
+
+    public function leilaoKinguin()
+    {
+        return $this->belongsTo(Tipo_leilao::class, 'id_leilao_kinguin');
+    }
+
+    public function plataforma()
+    {
+        return $this->belongsTo(Plataforma::class, 'id_plataforma');
+    }
+
+    protected $hidden = [
+        'id_fornecedor',
+        'tipo_reclamacao_id',
+        'tipo_formato_id',
+        'id_leilao_g2a',
+        'id_leilao_gamivo',
+        'id_leilao_kinguin',
+        'id_plataforma'
     ];
 }

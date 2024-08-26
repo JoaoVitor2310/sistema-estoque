@@ -34,9 +34,17 @@ class VendaChaveTrocaController extends Controller
         $offset = $request->query('offset', 0);  // Valor padrão de 0
 
         // Busca os registros utilizando limit e offset
-        $jogos = Venda_chave_troca::limit($limit)->offset($offset)->get();
+        $jogos = Venda_chave_troca::with([
+            'fornecedor',
+            'tipoReclamacao',
+            'tipoFormato',
+            'leilaoG2A',
+            'leilaoGamivo',
+            'leilaoKinguin',
+            'plataforma'
+        ])->limit($limit)->offset($offset)->get();
 
-        is_object($jogos) ? $jogos = $jogos->toArray() : $jogos; // Garante que sempre será um array, mesmo que tenha só um jogo
+        is_object($jogos) ? $jogos = $jogos->toArray() : $jogos; // Garante que sempre será um array, mesmo que tenha só um elemento
 
         return $this->response(200, 'Jogos encontrados com sucesso.', $jogos);
     }
@@ -57,7 +65,7 @@ class VendaChaveTrocaController extends Controller
             "notaMetacritic" => "integer|min:0|max:100",
             "isSteam" => "boolean",
             "observacao" => ["string", "nullable"],
-            "id_leilao_G2A" => "integer|min:1|max:4",
+            "id_leilao_g2a" => "integer|min:1|max:4",
             "id_leilao_gamivo" => "integer|min:1|max:4",
             "id_leilao_kinguin" => "integer|min:1|max:4",
             "id_plataforma" => "integer|min:1|max:5",
@@ -135,7 +143,7 @@ class VendaChaveTrocaController extends Controller
             "isSteam" => "boolean",
             // "randomClassificationG2A" => "boolean",
             "observacao" => ["string", "nullable"],
-            "id_leilao_G2A" => "integer|min:1|max:4",
+            "id_leilao_g2a" => "integer|min:1|max:4",
             "id_leilao_gamivo" => "integer|min:1|max:4",
             "id_leilao_kinguin" => "integer|min:1|max:4",
             "id_plataforma" => "integer|min:1|max:5",
@@ -204,7 +212,7 @@ class VendaChaveTrocaController extends Controller
 
         unset($data['reclamacao']);
 
-        // Calcula as fórmulas?
+        // Calcula as fórmulas
         $data = $this->calculateFormulas($data);
 
 
@@ -219,9 +227,9 @@ class VendaChaveTrocaController extends Controller
 
         return $this->response(200, 'Jogo atualizado com sucesso', $data);
 
-        $data['id_fornecedor'] = $this->criarAdicionarFornecedor($data['perfilOrigem'], $data['reclamacao']);
+        // $data['id_fornecedor'] = $this->criarAdicionarFornecedor($data['perfilOrigem'], $data['reclamacao']);
 
-        return $this->response(200, 'Jogo atualizado com sucesso', $game);
+        // return $this->response(200, 'Jogo atualizado com sucesso', $game);
 
     }
 

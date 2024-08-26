@@ -32,8 +32,8 @@ return new class extends Migration
             $table->string('randomClassificationKinguin')->nullable();
             $table->string('observacao')->nullable();
 
-            $table->integer('id_leilao_G2A')->default(1);
-            $table->foreign('id_leilao_G2A')->references('id')->on('tipo_leilao');
+            $table->integer('id_leilao_g2a')->default(1);
+            $table->foreign('id_leilao_g2a')->references('id')->on('tipo_leilao');
 
             $table->integer('id_leilao_gamivo')->default(1);
             $table->foreign('id_leilao_gamivo')->references('id')->on('tipo_leilao');
